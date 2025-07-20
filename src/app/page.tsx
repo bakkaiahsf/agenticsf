@@ -1,26 +1,23 @@
-// src/lib/fetch.ts
+// src/app/page.tsx
+import { getCourses } from '@/lib/fetch';
 
-export async function getCourses() {
-  const res = await fetch('https://agenticsf.in/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query GetPosts {
-          posts {
-            nodes {
-              id
-              title
-              excerpt
-            }
-          }
-        }
-      `,
-    }),
-  });
+export default async function Home() {
+  const data = await getCourses();
 
-  const json = await res.json();
-  return json.data;
+  return (
+    <main className="p-8 grid gap-6 md:grid-cols-3">
+      {data?.posts?.nodes?.map((post: any) => (
+        <article
+          key={post.id}
+          className="border rounded-xl p-4 shadow hover:shadow-lg transition"
+        >
+          <h2 className="text-lg font-bold mb-2">{post.title}</h2>
+          <div
+            className="text-sm text-gray-600"
+            dangerouslySetInnerHTML={{ __html: post.excerpt }}
+          />
+        </article>
+      ))}
+    </main>
+  );
 }
